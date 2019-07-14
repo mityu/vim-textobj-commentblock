@@ -91,7 +91,7 @@ EXAMPLES                                *textobj-commentblock-examples*
 Use this plugin with tyru/caw.vim. >
     augroup textobj-commentblock
         autocmd!
-        autocmd Filetype call textobj#commentblock#caw()
+        autocmd Filetype * call textobj#commentblock#pick#caw()
     augroup END
 >
 
