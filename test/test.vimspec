@@ -1,0 +1,138 @@
+let g:assert = themis#helper('assert')
+
+
+Describe textobj-commentblock
+
+  Before  all
+    nnoremap <Plug>(op-delete) d
+    nmap @ <Plug>(op-delete)<Plug>(test-target)
+
+    let g:buffer = ['line1', 'line2', 'line3']
+    lockvar! g:buffer
+  End
+
+  Before each
+    % delete _
+  End
+
+  Context oneline
+    Before all
+      let b:textobj_commentblock_oneline = '//'
+      let g:comment = b:textobj_commentblock_oneline . 'comment'
+    End
+
+    Context select-inner
+      Before all
+        omap <Plug>(test-target) <Plug>(textobj-commentblock-i)
+      End
+
+      It removes oneline comment at hatpos
+        call setline(1, '//comment')
+        normal! $
+        normal @
+        call g:assert.equals(getline(1), '//')
+      End
+
+      It doesn't remove oneline comment
+        call setline(1, '//comment')
+        normal @
+        call g:assert.equals(getline(1), '//comment')
+      End
+
+      It removes oneline comment at dollerpos
+        call setline(1, 'line//comment')
+        normal! $
+        normal @
+        call g:assert.equals(getline(1), 'line//')
+      End
+    End
+
+    Context select-all
+      Before all
+        omap <Plug>(test-target) <Plug>(textobj-commentblock-a)
+      End
+
+      It removes oneline comment at hatpos
+        call setline(1, '//comment')
+        normal @
+        call g:assert.equals(getline(1), '')
+      End
+
+      It removes oneline comment at dollerpos
+        call setline(1, 'line//comment')
+        normal! $
+        normal @
+        call g:assert.equals(getline(1), 'line')
+      End
+    End
+
+    After all
+      unlet b:textobj_commentblock_oneline
+    End
+  End
+
+  Context wrap
+    Before all
+      let b:textobj_commentblock_wrap = ['/*', '*/']
+    End
+
+    Context select-inner
+      Before all
+        omap <Plug>(test-target) <Plug>(textobj-commentblock-i)
+      End
+
+      It removes oneline wrap comment
+        call setline(1, '/*comment*/')
+        normal! ^fm
+        normal @
+        call g:assert.equals(getline(1), '/**/')
+      End
+
+      It removes multiline wrap comment 1
+        call setline(1, ['/*comment', 'comment', 'comment*/'])
+        normal! ^fm
+        normal @
+        call g:assert.equals(getline(1), '/**/')
+      End
+
+      It removes multiline wrap comment 2
+        call setline(1, ['/*', 'comment', '*/'])
+        call cursor(2, 0)
+        normal @
+        call g:assert.equals(getline(1), '/**/')
+      End
+    End
+
+    Context select-all
+      Before all
+        omap <Plug>(test-target) <Plug>(textobj-commentblock-a)
+      End
+
+      It removes oneline wrap comment
+        call setline(1, '/*comment*/')
+        normal! ^fm
+        normal @
+        call g:assert.equals(getline(1), '')
+      End
+
+      It removes multiline wrap comment 1
+        call setline(1, ['/*comment', 'comment', 'comment*/'])
+        normal! ^fm
+        normal @
+        call g:assert.equals(getline(1), '')
+      End
+
+      It removes multiline wrap comment 2
+        call setline(1, ['/*', 'comment', '*/'])
+        call cursor(2, 0)
+        normal @
+        call g:assert.equals(getline(1), '')
+      End
+    End
+
+    After all
+      unlet b:textobj_commentblock_wrap
+    End
+  End
+
+End

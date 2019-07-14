@@ -1,0 +1,100 @@
+*textobj-commentblock.txt* Text objects for comments
+
+Maintainer: mityu <mityu.email (at) gmail.com>
+Lisence: the MIT License
+
+==============================================================================
+CONTENTS                                *textobj-commentblock-contents*
+
+
+MAPPINGS                      |textobj-commentblock-mappings|
+VARIABLES                     |textobj-commentblock-variables|
+FUNCTIONS                     |textobj-commentblock-functions|
+EXAMPLES                      |textobj-commentblock-examples|
+
+
+==============================================================================
+REQUIREMENTS                            *textobj-commentblock-requirements*
+
+- kana/vim-textobj-user (https://github.com/kana/vim-textobj-user)
+
+And one of the following plugins is recommended:
+- tyru/caw.vim (https://github.com/tyru/caw.vim)
+
+==============================================================================
+MAPPINGS                                *textobj-commentblock-mappings*
+
+All of the following mappings are provided for |:omap| and |:xmap|.
+                                        *<Plug>(textobj-commentblock-i)*
+<Plug>(textobj-commentblock-i)
+    Select inner of a comment.
+
+                                        *<Plug>(textobj-commentblock-a)*
+<Plug>(textobj-commentblock-a)
+    Select all of a comment.
+
+
+                                    *textobj-commentblock-default-mappings*
+These are the default mappings.  You can disable them by setting
+|g:textobj_commentblock_no_default_key_mappings| to 1.
+{lhs}           {rhs}
+-----           -----
+ic              <Plug>(textobj-commentblock-i)
+ac              <Plug>(textobj-commentblock-a)
+
+
+==============================================================================
+VARIABLES                               *textobj-commentblock-variables*
+
+                            *g:textobj_commentblock_no_default_key_mappings*
+g:textobj_commentblock_no_default_key_mappings
+    |Number|. Default is 0.
+    If you set it to 1, the |textobj-commentblock-default-mappings| won't be
+    defined.
+
+                                        *b:textobj_commentblock_oneline*
+b:textobj_commentblock_oneline
+    |String| that specifies the begin of comments.
+    You must set it manually or via |textobj-commentblock-pickers|'s functions.
+    Ex) If filetype is cpp, it should be "//".
+    NOTE: It isn't defined in default.
+
+                                        *b:textobj_commentblock_wrap*
+b:textobj_commentblock_wrap
+    |List| of |String|s that specify the begin and end of wrap comments.
+    You must set it manually or via |textobj-commentblock-pickers|'s functions.
+    Ex) If filetype is c, it should be ["/*", "*/"].
+    NOTE: It isn't defined in default.
+
+==============================================================================
+FUNCTIONS                               *textobj-commentblock-functions*
+
+                                        *textobj-commentblock-pickers*
+The following functions set |b:textobj_commentblock_oneline| and
+|b:textobj_commentblock_wrap| by using other plugins or 'commentstring'.
+You should call them via |autocommands|.
+See also: *textobj-commentblock-examples*
+
+                                *textobj#commentblock#pick#commentstring()*
+textobj#commentblock#pick#commentstring()
+    It uses 'commentstring'.
+
+                                *textobj#commentblock#pick#caw()*
+textobj#commentblock#pick#caw()
+    {tyru/caw.vim is required.}
+    It uses |b:caw_oneline_comment| and |b:caw_wrap_oneline_comment|.
+
+
+==============================================================================
+EXAMPLES                                *textobj-commentblock-examples*
+
+Use this plugin with tyru/caw.vim. >
+    augroup textobj-commentblock
+        autocmd!
+        autocmd Filetype call textobj#commentblock#caw()
+    augroup END
+>
+
+
+==============================================================================
+vim:tw=78:et:ft=help:norl:
