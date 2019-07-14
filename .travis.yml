@@ -1,0 +1,16 @@
+language: generic
+sudo: false
+git:
+  depth: 10
+
+os:
+  - linux
+  - osx
+
+before_script:
+  - git clone --depth=1 --single-branch https://github.com/thinca/vim-themis /tmp/vim-themis
+  - git clone --depth=1 --single-branch https://github.com/kana/vim-textobj-user /tmp/vim-textobj-user
+
+script:
+  - vim --version
+  - /tmp/vim-themis/bin/themis --runtimepath /tmp/vim-textobj-user
