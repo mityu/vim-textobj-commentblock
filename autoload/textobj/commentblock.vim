@@ -104,19 +104,28 @@ function! s:select_oneline(kind) abort
     return
   endif
 
-  call cursor(linenr_save + 1, 0)
+  call cursor(linenr_save, 0)
   let lastline = line('$')
 
   while 1
     normal! $
     let end = getpos('.')
-    if (getline('.') !~# '^\s*' . pattern) || (line('.') == lastline)
+    if line('.') == lastline
       break
-    else
-      " Check if the next line is also a oneline comment or not.
-      normal! j
+    endif
+
+    " Check if the next line is also a oneline comment or not.
+    normal! j
+    if getline('.') !~# '^\s*' . pattern
+      break
     endif
   endwhile
+
+  if a:kind ==# 'a'
+    " Select also newline character.
+    let end[2] += 1
+  endif
+
   call s:decide_region(start, end)
 endfunction
 
