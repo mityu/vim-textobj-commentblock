@@ -50,6 +50,16 @@ function! s:select_wrap(kind) abort
   if a:kind ==# 'i'
     let start[2] += strlen(b:textobj_commentblock_wrap[0])
     let end[2] -= strlen(b:textobj_commentblock_wrap[1])
+    if end[2] <= 0
+      call cursor(end[1], 0)
+      normal! k$
+      let end = getpos('.')
+      let end[2] += 1  " Include newline character.
+    endif
+
+    if start[1] == end[1] && start[2] > end[2]
+      return 0
+    endif
   endif
 
   call s:decide_region(start, end)
