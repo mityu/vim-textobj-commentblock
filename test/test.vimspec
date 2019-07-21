@@ -161,14 +161,14 @@ Describe textobj-commentblock
         call setline(1, ['line1', '/*comment', 'comment', 'comment*/', 'line2'])
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', 'line2'])
+        call g:assert.equals(getline(1, '$'), ['line1', '', 'line2'])
       End
 
       It removes multiline wrap comment 4
         call setline(1, ['line1', '/*', 'comment', '*/', 'line2'])
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', 'line2'])
+        call g:assert.equals(getline(1, '$'), ['line1', '', 'line2'])
       End
     End
 

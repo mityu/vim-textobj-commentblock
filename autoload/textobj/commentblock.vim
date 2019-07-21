@@ -53,6 +53,9 @@ function! s:select_wrap(kind) abort
     return
   endif
   let end = getpos('.')
+  if a:kind ==# 'a'
+    let end[2] -= 1
+  endif
 
   call s:decide_region(start, end)
 endfunction
