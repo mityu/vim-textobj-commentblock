@@ -34,27 +34,22 @@ function! s:select_wrap(kind) abort
   endif
 
   let pattern_open = '\V' . b:textobj_commentblock_wrap[0]
-  let pattern_close = '\V' . b:textobj_commentblock_wrap[1]
-  if a:kind ==# 'i'
-    let pattern_open .= '\zs'
-    let pattern_close = '\_.\ze' . pattern_close
-  else
-    let pattern_close .= '\zs'
-  endif
-  let curpos_save = getpos('.')
+  let pattern_close = '\V' . b:textobj_commentblock_wrap[1] . '\zs'
 
   if !s:searchpair(pattern_open, pattern_close, 1)
     return
   endif
   let start = getpos('.')
 
-  call setpos('.', curpos_save)
   if !s:searchpair(pattern_open, pattern_close, 0)
     return
   endif
   let end = getpos('.')
-  if a:kind ==# 'a'
-    let end[2] -= 1
+  let end[2] -= 1
+
+  if a:kind ==# 'i'
+    let start[2] += strlen(b:textobj_commentblock_wrap[0])
+    let end[2] -= strlen(b:textobj_commentblock_wrap[1])
   endif
 
   call s:decide_region(start, end)
@@ -62,7 +57,7 @@ endfunction
 
 " If pairs found, returns true.
 function! s:searchpair(open, close, use_backward) abort
-  let flags = 'cW' . (a:use_backward ? 'b' : '')
+  let flags = 'W' . (a:use_backward ? 'cb' : '')
   let result = searchpair(a:open, '', a:close, flags, 's:is_in_string()')
 
   " NOTE: If pair didn't found, searchpair() returns 0 or -1.
