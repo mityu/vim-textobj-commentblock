@@ -34,32 +34,40 @@ function! s:select_wrap(kind) abort
   endif
 
   let pattern_open = '\V' . b:textobj_commentblock_wrap[0]
-  let pattern_close = '\V' . b:textobj_commentblock_wrap[1]
-  if a:kind ==# 'i'
-    let pattern_open .= '\zs'
-    let pattern_close = '\_.\ze' . pattern_close
-  else
-    let pattern_close .= '\zs'
-  endif
-  let curpos_save = getpos('.')
+  let pattern_close = '\V' . b:textobj_commentblock_wrap[1] . '\zs'
 
   if !s:searchpair(pattern_open, pattern_close, 1)
     return
   endif
   let start = getpos('.')
 
-  call setpos('.', curpos_save)
   if !s:searchpair(pattern_open, pattern_close, 0)
     return
   endif
   let end = getpos('.')
+  let end[2] -= 1
+
+  if a:kind ==# 'i'
+    let start[2] += strlen(b:textobj_commentblock_wrap[0])
+    let end[2] -= strlen(b:textobj_commentblock_wrap[1])
+    if end[2] <= 0
+      call cursor(end[1], 0)
+      normal! k$
+      let end = getpos('.')
+      let end[2] += 1  " Include newline character.
+    endif
+
+    if start[1] == end[1] && start[2] > end[2]
+      return 0
+    endif
+  endif
 
   call s:decide_region(start, end)
 endfunction
 
 " If pairs found, returns true.
 function! s:searchpair(open, close, use_backward) abort
-  let flags = 'cW' . (a:use_backward ? 'b' : '')
+  let flags = 'W' . (a:use_backward ? 'cb' : '')
   let result = searchpair(a:open, '', a:close, flags, 's:is_in_string()')
 
   " NOTE: If pair didn't found, searchpair() returns 0 or -1.
@@ -74,9 +82,6 @@ function! s:select_oneline(kind) abort
   endif
 
   let pattern = '\V' . b:textobj_commentblock_oneline
-  if a:kind ==# 'i'
-    let pattern .= '\zs'
-  endif
 
   let linenr_save = line('.')
   let start = []
@@ -94,7 +99,7 @@ function! s:select_oneline(kind) abort
     elseif getline('.') =~# '^\s*' . pattern
       " If the comment exists at hatpos, check if the prev line is also a
       " oneline comment or not.
-      normal! k$
+      normal! k
     else
       break
     endif
@@ -107,23 +112,25 @@ function! s:select_oneline(kind) abort
   call cursor(linenr_save, 0)
   let lastline = line('$')
 
-  while 1
-    normal! $
-    let end = getpos('.')
-    if line('.') == lastline
-      break
-    endif
+  normal! $
+  let end = getpos('.')
 
-    " Check if the next line is also a oneline comment or not.
-    normal! j
-    if getline('.') !~# '^\s*' . pattern
+  " Check if the next line is also a oneline comment or not.
+  while 1
+    if getline('.') !~# '^\s*' . pattern || line('.') == lastline
       break
     endif
+    let end = getpos('.')
+    normal! j$
   endwhile
 
   if a:kind ==# 'a'
-    " Select also newline character.
-    let end[2] += 1
+    if getline(end[1]) =~# '^\s*' . pattern
+      " Select also newline character.
+      let end[2] += 1
+    endif
+  else
+    let start[2] += strlen(b:textobj_commentblock_oneline)
   endif
 
   call s:decide_region(start, end)

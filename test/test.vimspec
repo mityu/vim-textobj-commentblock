@@ -33,10 +33,11 @@ Describe textobj-commentblock
         call g:assert.equals(getline(1), '//')
       End
 
-      It doesn't remove oneline comment
+      It removes oneline comment at hatpos from head of comment
         call setline(1, '//comment')
+        normal! ^
         normal @
-        call g:assert.equals(getline(1), '//comment')
+        call g:assert.equals(getline(1), '//')
       End
 
       It removes oneline comment at dollerpos
@@ -46,11 +47,27 @@ Describe textobj-commentblock
         call g:assert.equals(getline(1), 'line//')
       End
 
-      It removes oneline comment block
+      It removes oneline comment block 1
         call setline(1, ['line1', '//comment1',  '//comment2', 'line2'])
         call cursor(2, 3)
         normal @
         call g:assert.equals(getline(1, '$'), ['line1', '//', 'line2'])
+      End
+
+      It removes oneline comment block 2
+        call setline(1, ['line1', 'line2//comment1',  '//comment2', 'line3'])
+        call cursor(3, 0)
+        normal @
+        call g:assert.equals(getline(1, '$'),
+              \ ['line1', 'line2//comment1', '//', 'line3'])
+      End
+
+      It removes oneline comment block 3
+        call setline(1, ['line1', 'line2//comment1',  '//comment2', 'line3'])
+        normal! 2G$
+        normal @
+        call g:assert.equals(getline(1, '$'),
+              \ ['line1', 'line2//', '//comment2', 'line3'])
       End
     End
 
@@ -72,11 +89,27 @@ Describe textobj-commentblock
         call g:assert.equals(getline(1, '$'), ['line'])
       End
 
-      It removes oneline comment block
+      It removes oneline comment block 1
         call setline(1, ['line1', '//comment1',  '//comment2', 'line2'])
         call cursor(2, 3)
         normal @
         call g:assert.equals(getline(1, '$'), ['line1', 'line2'])
+      End
+
+      It removes oneline comment block 2
+        call setline(1, ['line1', 'line2//comment1',  '//comment2', 'line3'])
+        call cursor(3, 0)
+        normal @
+        call g:assert.equals(getline(1, '$'),
+              \ ['line1', 'line2//comment1', 'line3'])
+      End
+
+      It removes oneline comment block 3
+        call setline(1, ['line1', 'line2//comment1',  '//comment2', 'line3'])
+        normal! 2G$
+        normal @
+        call g:assert.equals(getline(1, '$'),
+              \ ['line1', 'line2', '//comment2', 'line3'])
       End
     End
 
@@ -129,6 +162,25 @@ Describe textobj-commentblock
         normal @
         call g:assert.equals(getline(1, '$'), ['line1', '/**/', 'line2'])
       End
+
+      It removes multiline wrap comment 5
+        call setline(1, '/*comment*/')
+        normal! ^
+        normal @
+        call g:assert.equals(getline(1), '/**/')
+      End
+
+      It removes multiline wrap comment 6
+        call setline(1, ['/*', '*/'])
+        normal @
+        call g:assert.equals(getline(1), '/**/')
+      End
+
+      It removes nothing in wrap comment
+        call setline(1, '/**/')
+        normal @
+        call g:assert.equals(getline(1), '/**/')
+      End
     End
 
     Context select-all
@@ -139,6 +191,13 @@ Describe textobj-commentblock
       It removes oneline wrap comment
         call setline(1, '/*comment*/')
         normal! ^fm
+        normal @
+        call g:assert.equals(getline(1), '')
+      End
+
+      It removes oneline wrap comment from the edge position
+        call setline(1, '/*comment*/')
+        normal! ^
         normal @
         call g:assert.equals(getline(1), '')
       End
@@ -161,14 +220,14 @@ Describe textobj-commentblock
         call setline(1, ['line1', '/*comment', 'comment', 'comment*/', 'line2'])
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', 'line2'])
+        call g:assert.equals(getline(1, '$'), ['line1', '', 'line2'])
       End
 
       It removes multiline wrap comment 4
         call setline(1, ['line1', '/*', 'comment', '*/', 'line2'])
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', 'line2'])
+        call g:assert.equals(getline(1, '$'), ['line1', '', 'line2'])
       End
     End
 
