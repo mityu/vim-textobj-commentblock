@@ -82,9 +82,6 @@ function! s:select_oneline(kind) abort
   endif
 
   let pattern = '\V' . b:textobj_commentblock_oneline
-  if a:kind ==# 'i'
-    let pattern .= '\zs'
-  endif
 
   let linenr_save = line('.')
   let start = []
@@ -102,7 +99,7 @@ function! s:select_oneline(kind) abort
     elseif getline('.') =~# '^\s*' . pattern
       " If the comment exists at hatpos, check if the prev line is also a
       " oneline comment or not.
-      normal! k$
+      normal! k
     else
       break
     endif
@@ -115,23 +112,25 @@ function! s:select_oneline(kind) abort
   call cursor(linenr_save, 0)
   let lastline = line('$')
 
-  while 1
-    normal! $
-    let end = getpos('.')
-    if line('.') == lastline
-      break
-    endif
+  normal! $
+  let end = getpos('.')
 
-    " Check if the next line is also a oneline comment or not.
-    normal! j
-    if getline('.') !~# '^\s*' . pattern
+  " Check if the next line is also a oneline comment or not.
+  while 1
+    if getline('.') !~# '^\s*' . pattern || line('.') == lastline
       break
     endif
+    let end = getpos('.')
+    normal! j$
   endwhile
 
   if a:kind ==# 'a'
-    " Select also newline character.
-    let end[2] += 1
+    if getline(end[1]) =~# '^\s*' . pattern
+      " Select also newline character.
+      let end[2] += 1
+    endif
+  else
+    let start[2] += strlen(b:textobj_commentblock_oneline)
   endif
 
   call s:decide_region(start, end)
