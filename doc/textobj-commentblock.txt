@@ -73,7 +73,7 @@ FUNCTIONS                               *textobj-commentblock-functions*
 The following functions set |b:textobj_commentblock_oneline| and
 |b:textobj_commentblock_wrap| by using other plugins or 'commentstring'.
 You should call them via |autocommands|.
-See also: *textobj-commentblock-examples*
+See also: |textobj-commentblock-examples|
 
                                 *textobj#commentblock#pick#commentstring()*
 textobj#commentblock#pick#commentstring()
