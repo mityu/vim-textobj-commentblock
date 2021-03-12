@@ -40,8 +40,8 @@ jobs:
           download: ${{ matrix.download }}
       - name: Setup dependencies
         run: |
-          git clone --depth 1 --single-branch https://github.com/thinca/vim-themis ~/themis
-          git clone --depth 1 --single-branch https://github.com/kana/vim-textobj-user ~/textobj-user
+          git clone --depth 1 --single-branch https://github.com/thinca/vim-themis ./themis
+          git clone --depth 1 --single-branch https://github.com/kana/vim-textobj-user ./textobj-user
       - name: Display Vim version
         run: |
           ${{ steps.vim.outputs.executable }} --version
@@ -49,4 +49,4 @@ jobs:
         env:
           THEMIS_VIM: ${{ steps.vim.outputs.executable }}
         run: |
-          ~/themis/bin/themis --runtimepath ~/textobj-user
+          ./themis/bin/themis --runtimepath ./textobj-user
