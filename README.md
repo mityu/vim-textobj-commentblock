@@ -7,4 +7,3 @@ See [help](https://github.com/mityu/vim-textobj-commentblock/blob/master/doc/tex
 |CI|Status|
 |:--|:-:|
 |Github Actions|[![Test textobj-commentblock](https://github.com/mityu/vim-textobj-commentblock/actions/workflows/test.yml/badge.svg)](https://github.com/mityu/vim-textobj-commentblock/actions/workflows/test.yml)|
-|Travis CI|[![Travis CI](https://travis-ci.com/mityu/vim-textobj-commentblock.svg?branch=master)](https://travis-ci.com/github/mityu/vim-textobj-commentblock)|
