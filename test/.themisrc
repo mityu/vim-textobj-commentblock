@@ -1,0 +1,6 @@
+if &compatible
+  set nocompatible
+endif
+
+let s:deps = themis#helper('deps')
+call s:deps.git('kana/vim-textobj-user')
