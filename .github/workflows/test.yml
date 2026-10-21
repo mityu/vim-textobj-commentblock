@@ -32,10 +32,10 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Setup Vim
         id: vim
-        uses: thinca/action-setup-vim@v1
+        uses: thinca/action-setup-vim@12357e60838c113ae054e026eaaf94176c9ec769 # v3.0.3
         with:
           vim_version: ${{ matrix.vim_version }}
           download: ${{ matrix.download }}
