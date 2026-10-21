@@ -27,47 +27,98 @@ Describe textobj-commentblock
       End
 
       It removes oneline comment at hatpos
-        call setline(1, '//comment')
+        const before =<< trim END
+          //comment
+        END
+        call setline(1, before)
         normal! $
         normal @
-        call g:assert.equals(getline(1), '//')
+        const after =<< trim END
+          //
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes oneline comment at hatpos from head of comment
-        call setline(1, '//comment')
+        const before =<< trim END
+          //comment
+        END
+        call setline(1, before)
         normal! ^
         normal @
-        call g:assert.equals(getline(1), '//')
+        const after =<< trim END
+          //
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes oneline comment at dollerpos
-        call setline(1, 'line//comment')
+        const before =<< trim END
+          line//comment
+        END
+        call setline(1, before)
         normal! $
         normal @
-        call g:assert.equals(getline(1), 'line//')
+        const after =<< trim END
+          line//
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes oneline comment block 1
-        call setline(1, ['line1', '//comment1',  '//comment2', 'line2'])
+        const before =<< trim END
+          line1
+          //comment1
+          //comment2
+          line2
+        END
+        call setline(1, before)
         call cursor(2, 3)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', '//', 'line2'])
+        const after =<< trim END
+          line1
+          //
+          line2
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes oneline comment block 2
-        call setline(1, ['line1', 'line2//comment1',  '//comment2', 'line3'])
+        const before =<< trim END
+          line1
+          line2//comment1
+          //comment2
+          line3
+        END
+        call setline(1, before)
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'),
-              \ ['line1', 'line2//comment1', '//', 'line3'])
+        const after =<< trim END
+          line1
+          line2//comment1
+          //
+          line3
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes oneline comment block 3
-        call setline(1, ['line1', 'line2//comment1',  '//comment2', 'line3'])
+        const before =<< trim END
+          line1
+          line2//comment1
+          //comment2
+          line3
+        END
+        call setline(1, before)
         normal! 2G$
         normal @
-        call g:assert.equals(getline(1, '$'),
-              \ ['line1', 'line2//', '//comment2', 'line3'])
+        const after =<< trim END
+          line1
+          line2//
+          //comment2
+          line3
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
     End
 
@@ -77,39 +128,79 @@ Describe textobj-commentblock
       End
 
       It removes oneline comment at hatpos
-        call setline(1, '//comment')
+        const before =<< trim END
+          //comment
+        END
+        call setline(1, before)
         normal @
         call g:assert.equals(getline(1, '$'), [''])
       End
 
       It removes oneline comment at dollerpos
-        call setline(1, 'line//comment')
+        const before =<< trim END
+          line//comment
+        END
+        call setline(1, before)
         normal! $
         normal @
-        call g:assert.equals(getline(1, '$'), ['line'])
+        const after =<< trim END
+          line
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes oneline comment block 1
-        call setline(1, ['line1', '//comment1',  '//comment2', 'line2'])
+        const before =<< trim END
+          line1
+          //comment1
+          //comment2
+          line2
+        END
+        call setline(1, before)
         call cursor(2, 3)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', 'line2'])
+        const after =<< trim END
+          line1
+          line2
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes oneline comment block 2
-        call setline(1, ['line1', 'line2//comment1',  '//comment2', 'line3'])
+        const before =<< trim END
+          line1
+          line2//comment1
+          //comment2
+          line3
+        END
+        call setline(1, before)
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'),
-              \ ['line1', 'line2//comment1', 'line3'])
+        const after =<< trim END
+          line1
+          line2//comment1
+          line3
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes oneline comment block 3
-        call setline(1, ['line1', 'line2//comment1',  '//comment2', 'line3'])
+        const before =<< trim END
+          line1
+          line2//comment1
+          //comment2
+          line3
+        END
+        call setline(1, before)
         normal! 2G$
         normal @
-        call g:assert.equals(getline(1, '$'),
-              \ ['line1', 'line2', '//comment2', 'line3'])
+        const after =<< trim END
+          line1
+          line2
+          //comment2
+          line3
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
     End
 
@@ -129,57 +220,122 @@ Describe textobj-commentblock
       End
 
       It removes oneline wrap comment
-        call setline(1, '/*comment*/')
+        const before =<< trim END
+          /*comment*/
+        END
+        call setline(1, before)
         normal! ^fm
         normal @
-        call g:assert.equals(getline(1), '/**/')
+        const after =<< trim END
+          /**/
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes multiline wrap comment 1
-        call setline(1, ['/*comment', 'comment', 'comment*/'])
+        const before =<< trim END
+          /*comment
+          comment
+          comment*/
+        END
+        call setline(1, before)
         normal! ^fm
         normal @
-        call g:assert.equals(getline(1), '/**/')
+        const after =<< trim END
+          /**/
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes multiline wrap comment 2
-        call setline(1, ['/*', 'comment', '*/'])
+        const before =<< trim END
+          /*
+          comment
+          */
+        END
+        call setline(1, before)
         call cursor(2, 0)
         normal @
-        call g:assert.equals(getline(1), '/**/')
+        const after =<< trim END
+          /**/
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes multiline wrap comment 3
-        call setline(1, ['line1', '/*comment', 'comment', 'comment*/', 'line2'])
+        const before =<< trim END
+          line1
+          /*comment
+          comment
+          comment*/
+          line2
+        END
+        call setline(1, before)
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', '/**/', 'line2'])
+        const after =<< trim END
+          line1
+          /**/
+          line2
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes multiline wrap comment 4
-        call setline(1, ['line1', '/*', 'comment', '*/', 'line2'])
+        const before =<< trim END
+          line1
+          /*
+          comment
+          */
+          line2
+        END
+        call setline(1, before)
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', '/**/', 'line2'])
+        const after =<< trim END
+          line1
+          /**/
+          line2
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes multiline wrap comment 5
-        call setline(1, '/*comment*/')
+        const before =<< trim END
+          /*comment*/
+        END
+        call setline(1, before)
         normal! ^
         normal @
-        call g:assert.equals(getline(1), '/**/')
+        const after =<< trim END
+          /**/
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes multiline wrap comment 6
-        call setline(1, ['/*', '*/'])
+        const before =<< trim END
+          /*
+          */
+        END
+        call setline(1, before)
         normal @
-        call g:assert.equals(getline(1), '/**/')
+        const after =<< trim END
+          /**/
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes nothing in wrap comment
-        call setline(1, '/**/')
+        const before =<< trim END
+          /**/
+        END
+        call setline(1, before)
         normal @
-        call g:assert.equals(getline(1), '/**/')
+        const after =<< trim END
+          /**/
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
     End
 
@@ -189,45 +345,85 @@ Describe textobj-commentblock
       End
 
       It removes oneline wrap comment
-        call setline(1, '/*comment*/')
+        const before =<< trim END
+          /*comment*/
+        END
+        call setline(1, before)
         normal! ^fm
         normal @
-        call g:assert.equals(getline(1), '')
+        call g:assert.equals(getline(1, '$'), [''])
       End
 
       It removes oneline wrap comment from the edge position
-        call setline(1, '/*comment*/')
+        const before =<< trim END
+          /*comment*/
+        END
+        call setline(1, before)
         normal! ^
         normal @
-        call g:assert.equals(getline(1), '')
+        call g:assert.equals(getline(1, '$'), [''])
       End
 
       It removes multiline wrap comment 1
-        call setline(1, ['/*comment', 'comment', 'comment*/'])
+        const before =<< trim END
+          /*comment
+          comment
+          comment*/
+        END
+        call setline(1, before)
         normal! ^fm
         normal @
         call g:assert.equals(getline(1, '$'), [''])
       End
 
       It removes multiline wrap comment 2
-        call setline(1, ['/*', 'comment', '*/'])
+        const before =<< trim END
+          /*
+          comment
+          */
+        END
+        call setline(1, before)
         call cursor(2, 0)
         normal @
         call g:assert.equals(getline(1, '$'), [''])
       End
 
       It removes multiline wrap comment 3
-        call setline(1, ['line1', '/*comment', 'comment', 'comment*/', 'line2'])
+        const before =<< trim END
+          line1
+          /*comment
+          comment
+          comment*/
+          line2
+        END
+        call setline(1, before)
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', '', 'line2'])
+        const after =<< trim END
+          line1
+
+          line2
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
 
       It removes multiline wrap comment 4
-        call setline(1, ['line1', '/*', 'comment', '*/', 'line2'])
+        const before =<< trim END
+          line1
+          /*
+          comment
+          */
+          line2
+        END
+        call setline(1, before)
         call cursor(3, 0)
         normal @
-        call g:assert.equals(getline(1, '$'), ['line1', '', 'line2'])
+        const after =<< trim END
+          line1
+
+          line2
+        END
+        call g:assert.equals(getline(1, '$'), after)
       End
     End
 
